@@ -37,4 +37,4 @@ for i in range(ncols):
 data[2,:] = third
 data[3,:] = fourth
 data[4,:] = fifth
-np.savetxt('dataStudent_' + str(ncols) + '.txt', data, fmt='%i')    
+np.savetxt(f'dataStudent_{ncols}.txt', data, fmt='%i')    

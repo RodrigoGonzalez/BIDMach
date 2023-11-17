@@ -16,11 +16,11 @@ X = np.array(data)
 t1 = time.time()
 
 t_read = t1 - t0
-print("Finished reading in " + repr(t_read) + " secs")
+print(f"Finished reading in {repr(t_read)} secs")
 
 batch_size = 10
 kmeans = KMeans(n_clusters=256, init='random', n_init=1, max_iter=10, tol=0.0001, precompute_distances=False, verbose=0, random_state=None, copy_x=False, n_jobs=1)
 kmeans.fit(X)
 t2 = time.time()
 t_batch = t2 - t1
-print("compute time " + repr(t_batch) + " secs")
+print(f"compute time {repr(t_batch)} secs")

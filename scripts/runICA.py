@@ -87,7 +87,7 @@ def get_mixing_matrix(group, pre_whitened):
                           [-.1, -.1,   3, -.9],
                           [8,     1,   7,   1],
                           [1.5,  -2,   3,  -1]])
-    elif group == 3 or group == 4:
+    elif group in [3, 4]:
         if pre_whitened:
             A = np.array([[ 0.31571,  0.45390, -0.59557,  0.12972,  0.56837],
                           [-0.32657,  0.47508,  0.43818, -0.56815,  0.39129],

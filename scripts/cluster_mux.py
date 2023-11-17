@@ -24,10 +24,10 @@ def main():
     tmux_cmd('new-window -d -n tail-workers')
 
     pane_id = tmux_cmd('list-panes -t tail-workers -F #D')[0]
-    tmux_cmd('split-window -d -h -t {}'.format(pane_id))
+    tmux_cmd(f'split-window -d -h -t {pane_id}')
     pane_ids = tmux_cmd('list-panes -t tail-workers -F #D')
     for pid in pane_ids:
-        tmux_cmd('split-window -d -v -t {}'.format(pid))
+        tmux_cmd(f'split-window -d -v -t {pid}')
     pane_ids = tmux_cmd('list-panes -t tail-workers -F #D')
 
     with open(SPARK_SLAVE_PATH, 'r') as f:
@@ -36,7 +36,7 @@ def main():
     for pid, saddr in zip(pane_ids, slave_addrs):
         send_cmd(pid, 'su2')
         time.sleep(0.05)
-        send_cmd(pid, 'ssh {}'.format(saddr))
+        send_cmd(pid, f'ssh {saddr}')
         time.sleep(0.1)
         send_cmd(pid, 'tail -f /tmp/bidmach_worker.log')
 

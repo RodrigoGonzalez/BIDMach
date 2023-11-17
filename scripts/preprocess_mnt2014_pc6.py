@@ -66,9 +66,9 @@ parser.add_argument('--unk-token', type=int, default=2, help='token for <UNK>')
 
 
 def gzip_uncompressed_size(gzipfile_path):
-    return int(subprocess.check_output(
-        'gzip -l {}'.format(gzipfile_path).split()
-    ).split()[5])
+    return int(
+        subprocess.check_output(f'gzip -l {gzipfile_path}'.split()).split()[5]
+    )
 
 
 # Source: http://stackoverflow.com/a/434328
@@ -99,25 +99,25 @@ def open_files():
 
 def safe_pickle(obj, filename):
     if os.path.isfile(filename) and not args.overwrite:
-        logger.warning("Not saving %s, already exists." % (filename))
+        logger.warning(f"Not saving {filename}, already exists.")
     else:
         if os.path.isfile(filename):
-            logger.info("Overwriting %s." % filename)
+            logger.info(f"Overwriting {filename}.")
         else:
-            logger.info("Saving to %s." % filename)
+            logger.info(f"Saving to {filename}.")
         with open(filename, 'wb') as f:
             cPickle.dump(obj, f, protocol=cPickle.HIGHEST_PROTOCOL)
 
 
 def safe_hdf(array, name):
-    if os.path.isfile(name + '.hdf') and not args.overwrite:
-        logger.warning("Not saving %s, already exists." % (name + '.hdf'))
+    if os.path.isfile(f'{name}.hdf') and not args.overwrite:
+        logger.warning(f"Not saving {name}.hdf, already exists.")
     else:
-        if os.path.isfile(name + '.hdf'):
-            logger.info("Overwriting %s." % (name + '.hdf'))
+        if os.path.isfile(f'{name}.hdf'):
+            logger.info(f"Overwriting {name}.hdf.")
         else:
-            logger.info("Saving to %s." % (name + '.hdf'))
-        with tables.openFile(name + '.hdf', 'w') as f:
+            logger.info(f"Saving to {name}.hdf.")
+        with tables.openFile(f'{name}.hdf', 'w') as f:
             atom = tables.Atom.from_dtype(array.dtype)
             filters = tables.Filters(complib='blosc', complevel=5)
             ds = f.createCArray(f.root, name.replace('.', ''), atom,
@@ -132,16 +132,15 @@ def create_dictionary():
     global_counter = Counter()
 
     for input_file, base_filename in zip(args.input, base_filenames):
-        count_filename = base_filename + '.count.pkl'
+        count_filename = f'{base_filename}.count.pkl'
         input_filename = os.path.basename(input_file.name)
         if os.path.isfile(count_filename) and not args.overwrite:
-            logger.info("Loading word counts for %s from %s"
-                        % (input_filename, count_filename))
+            logger.info(f"Loading word counts for {input_filename} from {count_filename}")
             with open(count_filename, 'rb') as f:
                 counter = cPickle.load(f)
-            sentence_count = sum([1 for line in input_file])
+            sentence_count = sum(1 for _ in input_file)
         else:
-            logger.info("Counting words in %s" % input_filename)
+            logger.info(f"Counting words in {input_filename}")
             counter = Counter()
             sentence_count = 0
 
@@ -186,11 +185,20 @@ def create_dictionary():
             logger.info('Building a dictionary with all unique words')
             args.vocab = len(combined_counter) + 2
         vocab_count = combined_counter.most_common(args.vocab - 2)
-        logger.info("Creating dictionary of %s most common words, covering "
-                    "%2.1f%% of the text."
-                    % (args.vocab,
-                       100.0 * sum([count for word, count in vocab_count]) /
-                       sum(combined_counter.values())))
+        logger.info(
+            (
+                "Creating dictionary of %s most common words, covering "
+                "%2.1f%% of the text."
+                % (
+                    args.vocab,
+                    (
+                        100.0
+                        * sum(count for word, count in vocab_count)
+                        / sum(combined_counter.values())
+                    ),
+                )
+            )
+        )
     else:
         logger.info("Creating dictionary of all words")
         vocab_count = counter.most_common()
